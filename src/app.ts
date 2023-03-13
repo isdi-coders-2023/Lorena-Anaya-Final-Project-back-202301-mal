@@ -11,4 +11,6 @@ app.get('/', (_req, res) => {
 app.use(cors({ origin: ['http://localhost:4000/'] }));
 app.use(express.json());
 
+app.disable('x-powered-by');
+
 export default app;
