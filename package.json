@@ -1,0 +1,23 @@
+{
+  "name": "lorena-anaya-final-project-back-202301-mal",
+  "version": "1.0.0",
+  "description": "Final project back-end app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isdi-coders-2023/Lorena-Anaya-Final-Project-back-202301-mal.git"
+  },
+  "author": "Lorena Anaya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isdi-coders-2023/Lorena-Anaya-Final-Project-back-202301-mal/issues"
+  },
+  "homepage": "https://github.com/isdi-coders-2023/Lorena-Anaya-Final-Project-back-202301-mal#readme",
+  "devDependencies": {
+    "husky": "^8.0.0"
+  }
+}
