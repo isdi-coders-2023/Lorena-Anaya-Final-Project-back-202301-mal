@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 
 export const createCypher = () => {
   if (process.env.PASSWORD_ENCRYPTION_ALGORITHM === undefined) {
-    throw new Error('Encryption algotithm must be defined on env');
+    throw new Error('Encryption algorithm must be defined on env');
   }
 
   if (process.env.PASSWORD_ENCRYPTION_KEY === undefined) {
