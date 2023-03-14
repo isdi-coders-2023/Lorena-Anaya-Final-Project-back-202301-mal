@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { UserModel } from '../users/users-model';
 import { registerController } from './auth-controllers';
 import { encryptPassword } from './auth-utils';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 describe('Given a register controller', () => {
-  // Mockear la request con el body que te manda el usuario (un user con email y password normales)
   const request = {
     body: {
       email: 'mock@email.com',
@@ -19,13 +19,11 @@ describe('Given a register controller', () => {
     },
   } as Partial<Request>;
 
-  // Mockear la response
   const response = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
 
-  // Mockear el usuario que espero que sea llamado con UserModel.create()
   const newUser = {
     email: 'mock@email.com',
     password: encryptPassword('mockedPassword'),
@@ -60,5 +58,34 @@ describe('Given a register controller', () => {
       jest.fn(),
     );
     expect(response.status).toHaveBeenCalledWith(409);
+  });
+
+  test('When the password encryption algorithm environment variable is not defined, then the response should be an error', async () => {
+    const next = jest.fn();
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(null),
+    }));
+    delete process.env.PASSWORD_ENCRYPTION_ALGORITHM;
+    await registerController(
+      request as Request,
+      response as Response,
+      next as NextFunction,
+    );
+    expect(next).toHaveBeenCalled();
+  });
+
+  test('When the password encryption key environment variable is not defined, then the response should be an error', async () => {
+    const next = jest.fn();
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(null),
+    }));
+    process.env.PASSWORD_ENCRYPTION_ALGORITHM = 'dgdhd';
+    delete process.env.PASSWORD_ENCRYPTION_KEY;
+    await registerController(
+      request as Request,
+      response as Response,
+      next as NextFunction,
+    );
+    expect(next).toHaveBeenCalled();
   });
 });
