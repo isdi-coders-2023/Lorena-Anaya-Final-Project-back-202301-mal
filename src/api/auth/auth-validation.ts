@@ -8,18 +8,15 @@ export const authValidation = {
   body: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    phone: myCustomJoi
-      .string()
-      .phoneNumber({
-        defaultCountry: 'ES',
-        format: 'international',
-        strict: true,
-      })
-      .required(),
+    firstName: Joi.string(),
+    lastName: Joi.string(),
+    phone: myCustomJoi.string().phoneNumber({
+      defaultCountry: 'ES',
+      format: 'international',
+      strict: true,
+    }),
 
-    languages: Joi.string().required(),
-    role: Joi.string().required(),
+    languages: Joi.string(),
+    role: Joi.string(),
   }),
 };
