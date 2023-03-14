@@ -2,7 +2,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import request from 'supertest';
 import connectDB from '../../database/connection.js';
-import { User } from '../users/users-model';
+import { User } from '../users/users-model.js';
 import app from '../../app.js';
 import log from '../../logger.js';
 
