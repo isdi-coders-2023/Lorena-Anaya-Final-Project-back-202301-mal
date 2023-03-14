@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserModel } from '../users/users-model';
-import { registerController } from './auth-controllers';
-import { encryptPassword } from './auth-utils';
+import { UserModel } from '../users/users-model.js';
+import { registerController } from './auth-controllers.js';
+import { encryptPassword } from './auth-utils.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
