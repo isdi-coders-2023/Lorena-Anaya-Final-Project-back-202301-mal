@@ -4,7 +4,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  phone: number;
+  phone: string;
   languages: string;
   password: string;
   role: 'admin' | 'translator';
@@ -14,7 +14,7 @@ const userSchema = new Schema<User>({
   email: String,
   firstName: String,
   lastName: String,
-  phone: Number,
+  phone: String,
   languages: String,
   password: String,
   role: String,
