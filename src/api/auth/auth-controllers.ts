@@ -1,5 +1,4 @@
 import { RequestHandler } from 'express';
-import log from '../../logger.js';
 import { AuthRequest, LoginResponse } from '../../types/types-model.js';
 import { User, UserModel } from '../users/users-model.js';
 
@@ -51,12 +50,10 @@ export const loginController: RequestHandler<
     const existingUser = await UserModel.findOne(user).exec();
 
     if (existingUser === null) {
-      log.debug('User not found');
       return res.status(404).json({ msg: 'User not found' });
     }
 
     const userToken = generateJWTToken(email);
-    log.debug('Token generated');
     return res.status(201).json({ accessToken: userToken });
   } catch (err) {
     next(err);
