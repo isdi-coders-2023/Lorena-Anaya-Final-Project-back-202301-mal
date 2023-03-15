@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+
 import { AuthRequest, LoginResponse } from '../../types/types-model.js';
 import { User, UserModel } from '../users/users-model.js';
 

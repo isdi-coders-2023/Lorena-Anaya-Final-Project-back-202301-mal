@@ -31,8 +31,6 @@ export const encryptPassword = (password: string) => {
   return encryptedPassword.toString('hex');
 };
 
-console.log(encryptPassword('acdsgu'));
-
 export const generateJWTToken = (email: string) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET environment should be defined');
