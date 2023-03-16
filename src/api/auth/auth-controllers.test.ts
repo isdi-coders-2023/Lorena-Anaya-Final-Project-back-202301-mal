@@ -93,7 +93,7 @@ describe('Given a register controller', () => {
 
     const expectedError = new CustomHTTPError(
       409,
-      'That email is already registered',
+      'Error, that user is already registered.',
     );
 
     await registerController(request as Request, response as Response, next);
@@ -127,7 +127,7 @@ describe('Given a login controller', () => {
 
     const expectedError = new CustomHTTPError(
       404,
-      'User or password does not exists',
+      'Your password is invalid or this account does not exist.',
     );
 
     await loginController(request as Request, response as Response, next);

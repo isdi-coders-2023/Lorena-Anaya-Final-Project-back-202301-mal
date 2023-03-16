@@ -18,7 +18,7 @@ export const registerController: RequestHandler<
     const existingUser = await UserModel.findOne({ email }).exec();
     if (existingUser !== null) {
       log.error('Email already registered!');
-      throw new CustomHTTPError(409, 'That email is already registered');
+      throw new CustomHTTPError(409, 'Error, that user is already registered.');
     }
 
     const newUser: User = {
@@ -33,7 +33,7 @@ export const registerController: RequestHandler<
 
     await UserModel.create(newUser);
     log.info('New user created.');
-    return res.status(201).json({ msg: 'New user successfully created!' });
+    return res.status(201).json({ msg: ' Succesfully registered!' });
   } catch (err) {
     next(err);
   }
@@ -55,12 +55,13 @@ export const loginController: RequestHandler<
     const existingUser = await UserModel.findOne(user).exec();
 
     if (existingUser === null) {
-      console.log('entra dentro del controller del null');
-      throw new CustomHTTPError(404, 'User or password does not exists');
+      throw new CustomHTTPError(
+        404,
+        'Your password is invalid or this account does not exist.',
+      );
     }
 
     const userToken = generateJWTToken(email);
-    console.log('Pasa antes del 201');
     return res.status(201).json({ accessToken: userToken });
   } catch (err) {
     next(err);
