@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
-import { CustomHTTPError } from '../../utils/custom-http-error';
+import { CustomHTTPError } from '../../utils/custom-http-error.js';
 import { AuthRequest, LoginResponse } from '../../types/auth-models.js';
 import { User, UserModel } from '../users/users-model.js';
 
 import { encryptPassword, generateJWTToken } from './auth-utils.js';
-import log from '../../logger';
+import log from '../../logger.js';
 
 export const registerController: RequestHandler<
   unknown,
