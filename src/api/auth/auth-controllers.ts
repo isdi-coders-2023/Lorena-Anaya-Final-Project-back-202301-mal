@@ -1,9 +1,10 @@
 import { RequestHandler } from 'express';
-
-import { AuthRequest, LoginResponse } from '../../types/types-model.js';
+import { CustomHTTPError } from '../../utils/custom-http-error';
+import { AuthRequest, LoginResponse } from '../../types/auth-models.js';
 import { User, UserModel } from '../users/users-model.js';
 
 import { encryptPassword, generateJWTToken } from './auth-utils.js';
+import log from '../../logger';
 
 export const registerController: RequestHandler<
   unknown,
@@ -12,13 +13,15 @@ export const registerController: RequestHandler<
 > = async (req, res, next) => {
   const { email, password, firstName, lastName, phone, languages, role } =
     req.body;
-  const existingUser = await UserModel.findOne({ email }).exec();
-  if (existingUser !== null) {
-    return res.status(409).json({ msg: 'That email is already registered' });
-  }
 
   try {
-    const newUser = {
+    const existingUser = await UserModel.findOne({ email }).exec();
+    if (existingUser !== null) {
+      log.error('Email already registered!');
+      throw new CustomHTTPError(409, 'Error, that user is already registered.');
+    }
+
+    const newUser: User = {
       email,
       password: encryptPassword(password),
       role,
@@ -29,7 +32,8 @@ export const registerController: RequestHandler<
     };
 
     await UserModel.create(newUser);
-    return res.status(201).json({ msg: 'New user successfully created!' });
+    log.info('New user created.');
+    return res.status(201).json({ msg: ' Succesfully registered!' });
   } catch (err) {
     next(err);
   }
@@ -51,7 +55,10 @@ export const loginController: RequestHandler<
     const existingUser = await UserModel.findOne(user).exec();
 
     if (existingUser === null) {
-      return res.status(404).json({ msg: 'User not found' });
+      throw new CustomHTTPError(
+        404,
+        'Your password is invalid or this account does not exist.',
+      );
     }
 
     const userToken = generateJWTToken(email);

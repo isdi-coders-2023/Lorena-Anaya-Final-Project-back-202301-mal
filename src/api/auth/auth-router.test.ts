@@ -69,7 +69,19 @@ describe('Given an app with auth-router', () => {
     });
 
     test('When the email is already in use, then it should not be able to register', async () => {
-      await request(app).post('/auth/register').send(user).expect(409);
+      const alreadyUsedEmailUser: User = {
+        email: 'user@email.com',
+        password: 'password',
+        firstName: 'Mock',
+        lastName: 'Perez',
+        phone: '699954493',
+        languages: 'English, Spanish',
+        role: 'translator',
+      };
+      await request(app)
+        .post('/auth/register')
+        .send(alreadyUsedEmailUser)
+        .expect(409);
     });
 
     test('When the password encryption algorithm environment variable is not defined, then the response should be an error', async () => {
