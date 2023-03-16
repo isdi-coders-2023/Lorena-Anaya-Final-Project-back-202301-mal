@@ -1,18 +1,26 @@
 import { NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'express-validation';
-import log from '../logger.js';
+import { CustomHTTPError } from './custom-http-error.js';
 
-export const errorHandler = (
+export const appErrorHandler = (
   err: Error,
   _req: Request,
   res: Response,
   _next: NextFunction,
 ) => {
+  console.log('Entra dentro del errorhandler');
+
   if (err instanceof ValidationError) {
-    log.error(err);
-    return res.status(err.statusCode).json(err);
+    console.log('Entra dentro de validation error');
+    return res
+      .status(err.statusCode)
+      .json({ msg: err.details.body?.[0].message ?? err.message });
   }
 
-  log.error(err);
-  return res.status(500).json(err);
+  if (err instanceof CustomHTTPError) {
+    console.log('ENTRA EN EL CUSTOM ERROR');
+    return res.status(err.httpCode).json(err.toBodyJSON());
+  }
+
+  return res.status(500).json({ msg: err.message });
 };
