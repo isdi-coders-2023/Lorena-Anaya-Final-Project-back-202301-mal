@@ -8,17 +8,13 @@ export const appErrorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
-  console.log('Entra dentro del errorhandler');
-
   if (err instanceof ValidationError) {
-    console.log('Entra dentro de validation error');
     return res
       .status(err.statusCode)
       .json({ msg: err.details.body?.[0].message ?? err.message });
   }
 
   if (err instanceof CustomHTTPError) {
-    console.log('ENTRA EN EL CUSTOM ERROR');
     return res.status(err.httpCode).json(err.toBodyJSON());
   }
 

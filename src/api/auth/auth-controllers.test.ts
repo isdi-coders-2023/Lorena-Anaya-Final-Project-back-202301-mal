@@ -6,6 +6,7 @@ import {
 } from '../auth/auth-controllers.js';
 import { encryptPassword } from './auth-utils.js';
 import dotenv from 'dotenv';
+import { CustomHTTPError } from '../../utils/custom-http-error.js';
 dotenv.config();
 
 const newUser: User = {
@@ -83,16 +84,21 @@ describe('Given a register controller', () => {
     expect(UserModel.create).toHaveBeenCalledWith(newUser);
   });
 
-  test('When the recevied email is already used, then the response should be an error', async () => {
-    UserModel.findOne = jest.fn().mockReturnValue({
+  test('when the user tries to register with an existing account, then an error message shold be shown', async () => {
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(1),
-    });
-    await registerController(
-      request2 as Request,
-      response as Response,
-      jest.fn(),
+    }));
+
+    const next = jest.fn();
+
+    const expectedError = new CustomHTTPError(
+      409,
+      'That email is already registered',
     );
-    expect(response.status).toHaveBeenCalledWith(409);
+
+    await registerController(request as Request, response as Response, next);
+
+    expect(next).toHaveBeenCalledWith(expectedError);
   });
 });
 
@@ -112,11 +118,20 @@ describe('Given a login controller', () => {
     expect(response.status).toHaveBeenCalledWith(201);
   });
 
-  test('When the user tries to login with a non existing account, then the response shoul be an error', async () => {
-    UserModel.findOne = jest.fn().mockReturnValue({
+  test('when the user tries to login with an non existing account, then an error message shold be shown', async () => {
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(null),
-    });
-    await loginController(request as Request, response as Response, jest.fn());
-    expect(response.status).toHaveBeenCalledWith(404);
+    }));
+
+    const next = jest.fn();
+
+    const expectedError = new CustomHTTPError(
+      404,
+      'User or password does not exists',
+    );
+
+    await loginController(request as Request, response as Response, next);
+
+    expect(next).toHaveBeenCalledWith(expectedError);
   });
 });

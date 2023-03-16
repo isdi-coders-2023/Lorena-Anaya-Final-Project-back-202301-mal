@@ -1,9 +1,10 @@
 import { RequestHandler } from 'express';
-
-import { AuthRequest, LoginResponse } from '../../types/types-model.js';
+import { CustomHTTPError } from '../../utils/custom-http-error';
+import { AuthRequest, LoginResponse } from '../../types/auth-models.js';
 import { User, UserModel } from '../users/users-model.js';
 
 import { encryptPassword, generateJWTToken } from './auth-utils.js';
+import log from '../../logger';
 
 export const registerController: RequestHandler<
   unknown,
@@ -12,13 +13,15 @@ export const registerController: RequestHandler<
 > = async (req, res, next) => {
   const { email, password, firstName, lastName, phone, languages, role } =
     req.body;
-  const existingUser = await UserModel.findOne({ email }).exec();
-  if (existingUser !== null) {
-    return res.status(409).json({ msg: 'That email is already registered' });
-  }
 
   try {
-    const newUser = {
+    const existingUser = await UserModel.findOne({ email }).exec();
+    if (existingUser !== null) {
+      log.error('Email already registered!');
+      throw new CustomHTTPError(409, 'That email is already registered');
+    }
+
+    const newUser: User = {
       email,
       password: encryptPassword(password),
       role,
@@ -29,6 +32,7 @@ export const registerController: RequestHandler<
     };
 
     await UserModel.create(newUser);
+    log.info('New user created.');
     return res.status(201).json({ msg: 'New user successfully created!' });
   } catch (err) {
     next(err);
@@ -51,10 +55,12 @@ export const loginController: RequestHandler<
     const existingUser = await UserModel.findOne(user).exec();
 
     if (existingUser === null) {
-      return res.status(404).json({ msg: 'User not found' });
+      console.log('entra dentro del controller del null');
+      throw new CustomHTTPError(404, 'User or password does not exists');
     }
 
     const userToken = generateJWTToken(email);
+    console.log('Pasa antes del 201');
     return res.status(201).json({ accessToken: userToken });
   } catch (err) {
     next(err);
