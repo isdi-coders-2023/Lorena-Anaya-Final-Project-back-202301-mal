@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { User, UserModel } from '../users/users-model.js';
+import { UserModel } from '../users/users-model.js';
 import {
   loginController,
   registerController,
@@ -7,9 +7,10 @@ import {
 import { encryptPassword } from './auth-utils.js';
 import dotenv from 'dotenv';
 import { CustomHTTPError } from '../../utils/custom-http-error.js';
+import { RegisterRequest } from '../../types/auth-models.js';
 dotenv.config();
 
-const newUser: User = {
+const newUser: RegisterRequest = {
   email: 'mock@email.com',
   password: encryptPassword('mockedPassword'),
   firstName: 'mock',

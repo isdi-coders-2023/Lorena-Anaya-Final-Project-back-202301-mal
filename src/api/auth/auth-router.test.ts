@@ -2,9 +2,9 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import request from 'supertest';
 import connectDB from '../../database/connection.js';
-import { User } from '../users/users-model.js';
 import app from '../../app.js';
 import log from '../../logger.js';
+import { RegisterRequest } from '../../types/auth-models.js';
 
 describe('Given an app with auth-router', () => {
   let mongoServer: MongoMemoryServer;
@@ -21,7 +21,7 @@ describe('Given an app with auth-router', () => {
   });
 
   describe('When a user wants to register', () => {
-    const user: User = {
+    const user: RegisterRequest = {
       email: 'user@email.com',
       password: 'password',
       firstName: 'Mock',
@@ -34,10 +34,11 @@ describe('Given an app with auth-router', () => {
     test('With valid inputs, then it should be registered', async () => {
       await request(app).post('/auth/register').send(user).expect(201);
       log.info(user);
+      console.log(user);
     });
 
     test('With an invalid email, then it should not be able to register', async () => {
-      const invalidEmailUser: User = {
+      const invalidEmailUser: RegisterRequest = {
         email: 'usemail.com',
         password: 'password',
         firstName: 'Mock',
@@ -53,7 +54,7 @@ describe('Given an app with auth-router', () => {
     });
 
     test('With an invalid phone number, then it should not be able to register', async () => {
-      const invalidPhoneUser: User = {
+      const invalidPhoneUser: RegisterRequest = {
         email: 'user2@gmail.com',
         password: 'password',
         firstName: 'Mock',
@@ -69,7 +70,7 @@ describe('Given an app with auth-router', () => {
     });
 
     test('When the email is already in use, then it should not be able to register', async () => {
-      const alreadyUsedEmailUser: User = {
+      const alreadyUsedEmailUser: RegisterRequest = {
         email: 'user@email.com',
         password: 'password',
         firstName: 'Mock',
@@ -86,7 +87,7 @@ describe('Given an app with auth-router', () => {
 
     test('When the password encryption algorithm environment variable is not defined, then the response should be an error', async () => {
       delete process.env.PASSWORD_ENCRYPTION_ALGORITHM;
-      const user: User = {
+      const user: RegisterRequest = {
         email: 'user334@email.com',
         password: 'password',
         firstName: 'Mock',
