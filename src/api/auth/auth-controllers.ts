@@ -1,7 +1,11 @@
 import { RequestHandler } from 'express';
 import { CustomHTTPError } from '../../utils/custom-http-error.js';
-import { AuthRequest, LoginResponse } from '../../types/auth-models.js';
-import { User, UserModel } from '../users/users-model.js';
+import {
+  AuthRequest,
+  LoginResponse,
+  RegisterRequest,
+} from '../../types/auth-models.js';
+import { UserModel } from '../users/users-model.js';
 
 import { encryptPassword, generateJWTToken } from './auth-utils.js';
 import log from '../../logger.js';
@@ -9,7 +13,7 @@ import log from '../../logger.js';
 export const registerController: RequestHandler<
   unknown,
   unknown,
-  User
+  RegisterRequest
 > = async (req, res, next) => {
   const { email, password, firstName, lastName, phone, languages, role } =
     req.body;
@@ -21,7 +25,7 @@ export const registerController: RequestHandler<
       throw new CustomHTTPError(409, 'Error, that user is already registered.');
     }
 
-    const newUser: User = {
+    const newUser: RegisterRequest = {
       email,
       password: encryptPassword(password),
       role,

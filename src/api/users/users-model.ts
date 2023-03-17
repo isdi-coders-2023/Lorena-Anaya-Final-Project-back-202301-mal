@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { Translation } from '../translations/translations-model.js';
 
 export interface User {
   email: string;
@@ -8,6 +9,7 @@ export interface User {
   languages: string;
   password: string;
   role: 'admin' | 'translator';
+  translations: Translation[];
 }
 
 const userSchema = new Schema<User>({
@@ -18,6 +20,7 @@ const userSchema = new Schema<User>({
   languages: String,
   password: String,
   role: String,
+  translations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Translation' }],
 });
 
 export const UserModel = mongoose.model<User>('User', userSchema, 'users');
