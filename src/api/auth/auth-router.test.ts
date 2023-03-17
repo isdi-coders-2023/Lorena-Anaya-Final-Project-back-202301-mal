@@ -34,7 +34,6 @@ describe('Given an app with auth-router', () => {
     test('With valid inputs, then it should be registered', async () => {
       await request(app).post('/auth/register').send(user).expect(201);
       log.info(user);
-      console.log(user);
     });
 
     test('With an invalid email, then it should not be able to register', async () => {
