@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { Translation } from '../translations/translations-model';
+import { Translation } from '../translations/translations-model.js';
 
 export interface User {
   email: string;
