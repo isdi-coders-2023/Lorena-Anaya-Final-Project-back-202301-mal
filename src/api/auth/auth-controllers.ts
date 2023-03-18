@@ -35,11 +35,10 @@ export const registerController: RequestHandler<
       phone,
     };
 
-    const createdUser = await UserModel.create(newUser);
+    await UserModel.create(newUser);
     log.info('New user created.');
     return res.status(201).json({
       msg: 'Succesfully registered!',
-      userId: createdUser._id,
     });
   } catch (err) {
     next(err);
@@ -68,8 +67,10 @@ export const loginController: RequestHandler<
       );
     }
 
-    const userToken = generateJWTToken(email);
-    return res.status(201).json({ accessToken: userToken });
+    const userToken = generateJWTToken(existingUser.email);
+    return res
+      .status(201)
+      .json({ id: existingUser.id, accessToken: userToken });
   } catch (err) {
     next(err);
   }
