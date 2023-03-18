@@ -6,6 +6,7 @@ export type RegisterRequest = Omit<User, 'translations'>;
 
 export interface LoginResponse {
   accessToken: string;
+  id: string;
 }
 
 export interface UserQueryId {
