@@ -15,7 +15,7 @@ export const getUserTranslationsController: RequestHandler<
     const foundTranslations = await UserModel.findById({ _id: id })
       .populate({ path: 'translations', model: TranslationModel })
       .exec();
-    res.json(foundTranslations);
+    res.json({ translations: foundTranslations?.translations });
   } catch (err) {
     next(err);
   }

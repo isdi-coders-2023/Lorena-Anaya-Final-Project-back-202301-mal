@@ -13,18 +13,20 @@ describe('Given a getUserTranslationsController function from users controller',
     json: jest.fn(),
   } as Partial<Response>;
 
-  const translations = [
-    {
-      bookingRef: 'TS1',
-      dueDate: '28/02/2023, 11:49:36 AM',
-      languageFrom: 'English',
-      languageTo: 'Chinese',
-      words: '1876',
-      status: 'Pending',
-      toTranslateDoc: 'url',
-      translatedDoc: 'url2',
-    },
-  ];
+  const translations = {
+    translations: [
+      {
+        bookingRef: 'TS1',
+        dueDate: '28/02/2023, 11:49:36 AM',
+        languageFrom: 'English',
+        languageTo: 'Chinese',
+        words: '1876',
+        status: 'Pending',
+        toTranslateDoc: 'url',
+        translatedDoc: 'url2',
+      },
+    ],
+  };
 
   test('when it is invoked it should return the list of translations of the user', async () => {
     UserModel.findById = jest.fn().mockImplementation(() => ({
