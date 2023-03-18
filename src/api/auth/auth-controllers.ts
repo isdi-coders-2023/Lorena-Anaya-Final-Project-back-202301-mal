@@ -35,9 +35,12 @@ export const registerController: RequestHandler<
       phone,
     };
 
-    await UserModel.create(newUser);
+    const createdUser = await UserModel.create(newUser);
     log.info('New user created.');
-    return res.status(201).json({ msg: ' Succesfully registered!' });
+    return res.status(201).json({
+      msg: 'Succesfully registered!',
+      userId: createdUser._id,
+    });
   } catch (err) {
     next(err);
   }
