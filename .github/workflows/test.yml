@@ -22,3 +22,4 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           BUCKET_URL: ${{ secrets.BUCKET_URL }}
           BUCKET_API_KEY: ${{ secrets.BUCKET_API_KEY }}
+          PROFILE_BUCKET_NAME: ${{ secrets.PROFILE_BUCKET_NAME }}
