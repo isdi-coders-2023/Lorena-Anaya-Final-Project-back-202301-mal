@@ -9,6 +9,7 @@ export interface Translation {
   status: string;
   toTranslateDoc: string;
   translatedDoc: string;
+  translator: string;
 }
 
 const translationSchema = new Schema<Translation>({
@@ -20,6 +21,7 @@ const translationSchema = new Schema<Translation>({
   status: String,
   toTranslateDoc: String,
   translatedDoc: String,
+  translator: String,
 });
 
 export const TranslationModel = mongoose.model<Translation>(
