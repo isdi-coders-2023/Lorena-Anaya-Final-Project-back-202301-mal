@@ -6,6 +6,7 @@ import { appErrorHandler } from './utils/error-handler.js';
 import { UsersRouter } from './api/users/users-router.js';
 import { TranslationsRouter } from './api/translations/translations-router.js';
 import bodyParser from 'body-parser';
+import { authMiddleware } from './api/auth/auth-middleware.js';
 
 const app = express();
 
@@ -23,7 +24,7 @@ app.use('/auth', authRouter);
 
 app.use('/user', UsersRouter);
 
-app.use('/translations', TranslationsRouter);
+app.use('/translations', authMiddleware, TranslationsRouter);
 
 app.use(appErrorHandler);
 

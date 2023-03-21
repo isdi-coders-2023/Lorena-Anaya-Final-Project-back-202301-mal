@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { CustomHTTPError } from '../../utils/custom-http-error';
+import { UserModel } from '../users/users-model';
 import { createTranslationController } from './translations-controllers';
 import { TranslationModel } from './translations-model';
 
@@ -52,12 +54,57 @@ describe('When a request to create a translation is made', () => {
   TranslationModel.create = jest.fn().mockResolvedValue(mockPost);
 
   test('Then the translation should be created', async () => {
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(1),
+    }));
+
+    UserModel.updateOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(1),
+    }));
+
     await createTranslationController(
       request as Request,
       response as Response,
       next as NextFunction,
     );
     await expect(response.status).toHaveBeenCalledWith(201);
+  });
+
+  test('But the user to update is not updated, then it should throw an error', async () => {
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(1),
+    }));
+
+    UserModel.updateOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue({ modifiedCount: 0 }),
+    }));
+
+    const expectedError2 = new CustomHTTPError(
+      404,
+      'User to update not updated',
+    );
+
+    await createTranslationController(
+      request as Request,
+      response as Response,
+      next as NextFunction,
+    );
+    await expect(next).toHaveBeenCalledWith(expectedError2);
+  });
+
+  test('But the user to update is not found, then it should throw an error', async () => {
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(null),
+    }));
+
+    const expectedError = new CustomHTTPError(404, 'User to update not found');
+
+    await createTranslationController(
+      request as Request,
+      response as Response,
+      next as NextFunction,
+    );
+    await expect(next).toHaveBeenCalledWith(expectedError);
   });
 
   test('But there is an error, then an error should be thrown', async () => {

@@ -97,5 +97,19 @@ describe('Given an app with auth-router', () => {
       };
       await request(app).post('/auth/register').send(user).expect(500);
     });
+
+    test('When the password encryption algorithm environment variable is not defined, then the response should be an error', async () => {
+      delete process.env.JWT_SECRET;
+      const user: RegisterRequest = {
+        email: 'user334@email.com',
+        password: 'password',
+        firstName: 'Mock',
+        lastName: 'Perez',
+        phone: '699954493',
+        languages: 'English, Spanish',
+        role: 'translator',
+      };
+      await request(app).post('/auth/register').send(user).expect(500);
+    });
   });
 });
