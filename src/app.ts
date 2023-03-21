@@ -5,6 +5,7 @@ import { authRouter } from './api/auth/auth-router.js';
 import { appErrorHandler } from './utils/error-handler.js';
 import { UsersRouter } from './api/users/users-router.js';
 import { TranslationsRouter } from './api/translations/translations-router.js';
+import bodyParser from 'body-parser';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/', (_req, res) => {
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 
 app.disable('x-powered-by');
 
