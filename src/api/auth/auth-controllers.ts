@@ -67,7 +67,7 @@ export const loginController: RequestHandler<
       );
     }
 
-    const userToken = generateJWTToken(existingUser.email);
+    const userToken = generateJWTToken(existingUser._id.toString());
     return res
       .status(201)
       .json({ id: existingUser.id, accessToken: userToken });
