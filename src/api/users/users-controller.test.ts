@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { Translation } from '../translations/translations-model';
-import { getUserTranslationsController } from './users-controller';
+import {
+  getUsersController,
+  getUserTranslationsController,
+} from './users-controller';
 import { UserModel } from './users-model';
 
 describe('Given a getUserTranslationsController function from users controller', () => {
@@ -55,6 +58,44 @@ describe('Given a getUserTranslationsController function from users controller',
       next as NextFunction,
     );
 
+    expect(next).toHaveBeenCalled();
+  });
+});
+
+describe('Given a getUsersController function from UsersController', () => {
+  const request = {} as Request;
+  const response = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const users = [
+    {
+      _id: '6415cfa3b275f174bfbe76ec',
+      email: 'lorenadiaz@gmail.com',
+      firstName: 'Lorena',
+      lastName: 'Anaya',
+      phone: '626857375',
+      languages: 'Chinese, Spanish, English\n',
+      password: '68684f90e1f455e56f3948385c705484',
+      translations: [],
+    },
+  ];
+
+  test('when it is invoked it should return a list of Users', async () => {
+    UserModel.find = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(users),
+    }));
+    await getUsersController(request, response as Response, jest.fn());
+    expect(response.json).toHaveBeenCalledWith(users);
+  });
+
+  test('when the database throws an error then it should response with an error', async () => {
+    UserModel.find = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockRejectedValue(new Error('Database error')),
+    }));
+    const next = jest.fn();
+    await getUsersController(request, response as Response, next);
     expect(next).toHaveBeenCalled();
   });
 });
