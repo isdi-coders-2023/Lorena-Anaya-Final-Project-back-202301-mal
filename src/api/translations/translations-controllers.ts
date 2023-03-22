@@ -62,3 +62,21 @@ export const createTranslationController: RequestHandler<
     next(err);
   }
 };
+
+export const getTranslationByIdController: RequestHandler = async (
+  req,
+  res,
+  next,
+) => {
+  const { id } = req.params;
+  try {
+    const translation = await TranslationModel.findById(id).exec();
+    if (translation === null) {
+      throw new CustomHTTPError(404, 'The translation does not exists');
+    } else {
+      res.json(translation);
+    }
+  } catch (err) {
+    next(err);
+  }
+};
