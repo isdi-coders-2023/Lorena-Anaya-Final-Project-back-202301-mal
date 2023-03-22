@@ -12,15 +12,8 @@ export const createTranslationController: RequestHandler<
   { msg: string; translation: Translation },
   Translation
 > = async (req, res, next) => {
-  const {
-    bookingRef,
-    status,
-    languageFrom,
-    languageTo,
-    dueDate,
-    translator,
-    words,
-  } = req.body;
+  const { bookingRef, languageFrom, languageTo, dueDate, translator, words } =
+    req.body;
   const fileBuffer = req.file?.buffer;
   try {
     if (fileBuffer !== undefined) {
@@ -34,7 +27,7 @@ export const createTranslationController: RequestHandler<
           .getPublicUrl(fileName);
         const createTranslation: Translation = {
           bookingRef,
-          status,
+          status: 'Pending',
           languageFrom,
           languageTo,
           dueDate,
