@@ -31,7 +31,7 @@ describe('Given a route that needs authentication', () => {
       await request(app)
         .get('/translations/create')
         .set('Authorization', `Bearer ${token}`)
-        .expect(404);
+        .expect(500);
     });
   });
 

@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { CustomHTTPError } from '../../utils/custom-http-error';
 import { UserModel } from '../users/users-model';
-import { createTranslationController } from './translations-controllers';
+import {
+  createTranslationController,
+  getTranslationByIdController,
+} from './translations-controllers';
 import { TranslationModel } from './translations-model';
 
 jest.mock('@supabase/supabase-js', () => {
@@ -117,5 +120,60 @@ describe('When a request to create a translation is made', () => {
       next,
     );
     await expect(next).toHaveBeenCalled();
+  });
+});
+
+describe('Given a getTranslationByIdController from translations controller', () => {
+  const request = {
+    params: { id: 'mockId' },
+  } as Partial<Request>;
+  const response = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const translation = {
+    _id: 'mockId',
+    bookingRef: '7',
+    languageFrom: 'ENGLISH',
+    languageTo: 'FRENCH',
+    words: 542824,
+    status: 'Pending',
+    toTranslateDoc: 'url',
+    translatedDoc: '',
+    translator: 'alex',
+    __v: 0,
+  };
+
+  TranslationModel.findById = jest.fn().mockImplementation(() => ({
+    exec: jest.fn().mockResolvedValue(translation),
+  }));
+
+  const next = jest.fn();
+
+  test('when the user exists then it should respond with a student', async () => {
+    await getTranslationByIdController(
+      request as Request,
+      response as Response,
+      jest.fn(),
+    );
+    expect(response.json).toHaveBeenCalledWith(translation);
+  });
+  test('when the user does not exists then it should throw a custom error', async () => {
+    TranslationModel.findById = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(null),
+    }));
+
+    const expectedError = new CustomHTTPError(
+      404,
+      'The translation does not exists',
+    );
+
+    await getTranslationByIdController(
+      request as Request,
+      response as Response,
+      next as NextFunction,
+    );
+    await expect(next).toHaveBeenCalledWith(expectedError);
   });
 });
