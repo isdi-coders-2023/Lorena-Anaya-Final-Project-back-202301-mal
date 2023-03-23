@@ -74,7 +74,7 @@ export const getTranslationByIdController: RequestHandler = async (
     if (translation === null) {
       throw new CustomHTTPError(404, 'The translation does not exists');
     } else {
-      res.json(translation);
+      res.json({ translation: { translation } });
     }
   } catch (err) {
     next(err);

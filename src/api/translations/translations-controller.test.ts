@@ -37,13 +37,15 @@ describe('When a request to create a translation is made', () => {
   const next = jest.fn();
   const request = {
     body: {
-      bookingRef: 'tre',
-      dueDate: '2023-05-06',
-      languageFrom: 'spanish',
-      languageTo: 'english',
-      words: 3723872,
-      status: 'Pending',
-      translator: 'pepe',
+      translation: {
+        bookingRef: 'tre',
+        dueDate: '2023-05-06',
+        languageFrom: 'spanish',
+        languageTo: 'english',
+        words: 3723872,
+        status: 'Pending',
+        translator: 'pepe',
+      },
     },
     file: { buffer: Buffer.from('mockedBuffer') },
   } as Partial<Request>;
@@ -126,38 +128,50 @@ describe('When a request to create a translation is made', () => {
 describe('Given a getTranslationByIdController from translations controller', () => {
   const request = {
     params: { id: 'mockId' },
+    body: {
+      translation: {
+        bookingRef: 'tre',
+        dueDate: '2023-05-06',
+        languageFrom: 'spanish',
+        languageTo: 'english',
+        words: 3723872,
+        status: 'Pending',
+        translator: 'pepe',
+      },
+    },
   } as Partial<Request>;
   const response = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   } as Partial<Response>;
 
-  const translation = {
-    _id: 'mockId',
-    bookingRef: '7',
-    languageFrom: 'ENGLISH',
-    languageTo: 'FRENCH',
-    words: 542824,
-    status: 'Pending',
-    toTranslateDoc: 'url',
-    translatedDoc: '',
-    translator: 'alex',
-    __v: 0,
-  };
-
   TranslationModel.findById = jest.fn().mockImplementation(() => ({
-    exec: jest.fn().mockResolvedValue(translation),
+    exec: jest.fn().mockResolvedValue(request.body),
   }));
 
   const next = jest.fn();
 
-  test('when the user exists then it should respond with a student', async () => {
+  test('when the user exists then it should respond with a translation', async () => {
     await getTranslationByIdController(
       request as Request,
       response as Response,
       jest.fn(),
     );
-    expect(response.json).toHaveBeenCalledWith(translation);
+    expect(response.json).toHaveBeenCalledWith({
+      translation: {
+        translation: {
+          translation: {
+            bookingRef: 'tre',
+            dueDate: '2023-05-06',
+            languageFrom: 'spanish',
+            languageTo: 'english',
+            status: 'Pending',
+            translator: 'pepe',
+            words: 3723872,
+          },
+        },
+      },
+    });
   });
   test('when the user does not exists then it should throw a custom error', async () => {
     TranslationModel.findById = jest.fn().mockImplementation(() => ({
