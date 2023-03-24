@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import { CustomHTTPError } from '../../utils/custom-http-error.js';
 import {
   Translation,
   TranslationModel,
@@ -31,5 +32,19 @@ export const getUsersController: RequestHandler<
     res.json(foundUsers);
   } catch (error) {
     next(error);
+  }
+};
+
+export const getUserByIdController: RequestHandler = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const user = await UserModel.findById(id).exec();
+    if (user === null) {
+      throw new CustomHTTPError(404, 'User does not exist');
+    } else {
+      res.json({ user: { user } });
+    }
+  } catch (err) {
+    next(err);
   }
 };
