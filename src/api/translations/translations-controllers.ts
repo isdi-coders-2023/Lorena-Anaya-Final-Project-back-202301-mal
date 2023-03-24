@@ -20,7 +20,7 @@ export const createTranslationController: RequestHandler<
       const fileName = `${bookingRef}.pdf`;
       const { error } = await supabase.storage
         .from(PROFILE_BUCKET_NAME)
-        .upload(fileName, fileBuffer);
+        .upload(fileName, fileBuffer, { contentType: 'application/pdf' });
       if (error === null) {
         const { data } = supabase.storage
           .from(PROFILE_BUCKET_NAME)
