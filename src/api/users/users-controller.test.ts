@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import { CustomHTTPError } from '../../utils/custom-http-error';
 import { Translation } from '../translations/translations-model';
 import {
+  getUserByIdController,
   getUsersController,
   getUserTranslationsController,
 } from './users-controller';
@@ -97,5 +99,47 @@ describe('Given a getUsersController function from UsersController', () => {
     const next = jest.fn();
     await getUsersController(request, response as Response, next);
     expect(next).toHaveBeenCalled();
+  });
+});
+
+describe('Given a getUserByIdController from translations controller', () => {
+  const request = {
+    params: { id: 'mockId' },
+  } as Partial<Request>;
+  const response = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const next = jest.fn();
+
+  test('when the user exists then it should respond with a user', async () => {
+    const example = { user: { user: {} } };
+
+    const exampleResponse = { user: { user: { user: { user: {} } } } };
+
+    UserModel.findById = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(example),
+    }));
+    await getUserByIdController(
+      request as Request,
+      response as Response,
+      jest.fn(),
+    );
+    expect(response.json).toHaveBeenCalledWith(exampleResponse);
+  });
+  test('when the user does not exists then it should throw a custom error', async () => {
+    UserModel.findById = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(null),
+    }));
+
+    const expectedError = new CustomHTTPError(404, 'User does not exist');
+
+    await getUserByIdController(
+      request as Request,
+      response as Response,
+      next as NextFunction,
+    );
+    await expect(next).toHaveBeenCalledWith(expectedError);
   });
 });
