@@ -2,6 +2,7 @@ import express from 'express';
 import {
   createTranslationController,
   getTranslationByIdController,
+  getTranslationsController,
   updateTranslationStatusController,
   updateTranslationUploadController,
 } from './translations-controllers.js';
@@ -13,6 +14,8 @@ TranslationsRouter.route('/create').post(
   upload.single('toTranslateDoc'),
   createTranslationController,
 );
+
+TranslationsRouter.route('/all').get(getTranslationsController);
 
 TranslationsRouter.route('/:id')
   .get(getTranslationByIdController)

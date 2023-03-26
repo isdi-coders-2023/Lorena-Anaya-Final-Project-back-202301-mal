@@ -4,6 +4,7 @@ import { UserModel } from '../users/users-model';
 import {
   createTranslationController,
   getTranslationByIdController,
+  getTranslationsController,
   updateTranslationStatusController,
   updateTranslationUploadController,
 } from './translations-controllers';
@@ -359,5 +360,48 @@ describe('Given a update upload translation controller', () => {
       next as NextFunction,
     );
     await expect(next).toHaveBeenCalledWith(expectedError);
+  });
+});
+
+describe('Given a getTranslationsController function from translations controller', () => {
+  const request = {} as Request;
+  const response = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const translations = [
+    {
+      _id: '641c50c06018ad715d2752c7',
+      bookingRef: '675',
+      dueDate: '2023-04-28T00:00:00.000Z',
+      languageFrom: 'English',
+      languageTo: 'Spanish',
+      words: 524,
+      status: 'Completed',
+      toTranslateDoc:
+        'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/675.pdf',
+      translatedDoc:
+        'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/641c50c06018ad715d2752c7.pdf',
+      translator: 'Aana',
+      __v: 0,
+    },
+  ];
+
+  test('when it is invoked it should return a list of translations', async () => {
+    TranslationModel.find = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(translations),
+    }));
+    await getTranslationsController(request, response as Response, jest.fn());
+    expect(response.json).toHaveBeenCalledWith(translations);
+  });
+
+  test('when the database throws an error then it should response with an error', async () => {
+    TranslationModel.find = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockRejectedValue(new Error('Database error')),
+    }));
+    const next = jest.fn();
+    await getTranslationsController(request, response as Response, next);
+    expect(next).toHaveBeenCalled();
   });
 });
