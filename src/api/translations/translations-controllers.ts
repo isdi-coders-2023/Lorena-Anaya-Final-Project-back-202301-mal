@@ -149,3 +149,16 @@ export const updateTranslationStatusController: RequestHandler = async (
     next(err);
   }
 };
+
+export const getTranslationsController: RequestHandler<
+  unknown,
+  unknown,
+  Translation
+> = async (_req, res, next) => {
+  try {
+    const allTranslations = await TranslationModel.find({}).exec();
+    res.json(allTranslations);
+  } catch (error) {
+    next(error);
+  }
+};
