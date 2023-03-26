@@ -80,3 +80,72 @@ export const getTranslationByIdController: RequestHandler = async (
     next(err);
   }
 };
+
+export const updateTranslationUploadController: RequestHandler<
+  { id: string },
+  { msg: string; translation: Translation },
+  { translatedDoc: Buffer }
+> = async (req, res, next) => {
+  const { id } = req.params;
+  const fileBuffer = req.file?.buffer;
+
+  try {
+    if (fileBuffer !== undefined) {
+      const fileName = `${id}.pdf`;
+      const { error } = await supabase.storage
+        .from(PROFILE_BUCKET_NAME)
+        .upload(fileName, fileBuffer, { contentType: 'application/pdf' });
+
+      if (error === null) {
+        const { data } = supabase.storage
+          .from(PROFILE_BUCKET_NAME)
+          .getPublicUrl(fileName);
+        const translationToUpdate = await TranslationModel.findOne({
+          _id: id,
+        }).exec();
+        if (translationToUpdate === null) {
+          throw new CustomHTTPError(404, 'Translation not found');
+        }
+
+        translationToUpdate.translatedDoc = data.publicUrl;
+        const updatedTranslation = await translationToUpdate.save();
+
+        return res.status(200).json({
+          msg: 'Translation updated!',
+          translation: updatedTranslation,
+        });
+      }
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateTranslationStatusController: RequestHandler = async (
+  req,
+  res,
+  next,
+) => {
+  const { id } = req.params;
+  const filter = { _id: id };
+  const update = { $set: { status: req.body.status } };
+
+  try {
+    if (!req.body.status) {
+      throw new CustomHTTPError(400, 'Status is required');
+    }
+
+    const dbRes = await TranslationModel.updateOne(filter, update).exec();
+
+    if (dbRes.matchedCount === 0) {
+      throw new CustomHTTPError(404, 'Translation does not exist');
+    }
+
+    if (dbRes.modifiedCount === 1) {
+      const updatedTranslation = await TranslationModel.findById(id);
+      return res.json(updatedTranslation);
+    }
+  } catch (err) {
+    next(err);
+  }
+};
