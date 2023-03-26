@@ -2,6 +2,8 @@ import express from 'express';
 import {
   createTranslationController,
   getTranslationByIdController,
+  updateTranslationStatusController,
+  updateTranslationUploadController,
 } from './translations-controllers.js';
 import { upload } from './translations-upload-middleware.js';
 
@@ -12,4 +14,10 @@ TranslationsRouter.route('/create').post(
   createTranslationController,
 );
 
-TranslationsRouter.route('/:id').get(getTranslationByIdController);
+TranslationsRouter.route('/:id')
+  .get(getTranslationByIdController)
+  .patch(upload.single('translatedDoc'), updateTranslationUploadController);
+
+TranslationsRouter.route('/status/:id/').patch(
+  updateTranslationStatusController,
+);

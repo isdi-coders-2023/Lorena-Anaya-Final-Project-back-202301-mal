@@ -4,8 +4,10 @@ import { UserModel } from '../users/users-model';
 import {
   createTranslationController,
   getTranslationByIdController,
+  updateTranslationStatusController,
+  updateTranslationUploadController,
 } from './translations-controllers';
-import { TranslationModel } from './translations-model';
+import { Translation, TranslationModel } from './translations-model';
 
 jest.mock('@supabase/supabase-js', () => {
   const data = {
@@ -32,8 +34,12 @@ jest.mock('@supabase/supabase-js', () => {
     })),
   };
 });
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
-describe('When a request to create a translation is made', () => {
+// CREATE TRANSLATION
+describe('Given a create translation controller', () => {
   const next = jest.fn();
   const request = {
     body: {
@@ -58,7 +64,7 @@ describe('When a request to create a translation is made', () => {
   const mockPost = { _id: 'post_id' };
   TranslationModel.create = jest.fn().mockResolvedValue(mockPost);
 
-  test('Then the translation should be created', async () => {
+  test('When the request is made and everything goes ok, then the translation should be created', async () => {
     UserModel.findOne = jest.fn().mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(1),
     }));
@@ -75,7 +81,7 @@ describe('When a request to create a translation is made', () => {
     await expect(response.status).toHaveBeenCalledWith(201);
   });
 
-  test('But the user to update is not updated, then it should throw an error', async () => {
+  test('When the user to update is not updated, then it should throw an error', async () => {
     UserModel.findOne = jest.fn().mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(1),
     }));
@@ -97,7 +103,7 @@ describe('When a request to create a translation is made', () => {
     await expect(next).toHaveBeenCalledWith(expectedError2);
   });
 
-  test('But the user to update is not found, then it should throw an error', async () => {
+  test('When the user to update is not found, then it should throw an error', async () => {
     UserModel.findOne = jest.fn().mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(null),
     }));
@@ -112,7 +118,7 @@ describe('When a request to create a translation is made', () => {
     await expect(next).toHaveBeenCalledWith(expectedError);
   });
 
-  test('But there is an error, then an error should be thrown', async () => {
+  test('When there is an error, then an error should be thrown', async () => {
     TranslationModel.create = jest
       .fn()
       .mockRejectedValueOnce(new Error('test error'));
@@ -125,6 +131,7 @@ describe('When a request to create a translation is made', () => {
   });
 });
 
+// GET TRANSLATION BY ID
 describe('Given a getTranslationByIdController from translations controller', () => {
   const request = {
     params: { id: 'mockId' },
@@ -185,6 +192,169 @@ describe('Given a getTranslationByIdController from translations controller', ()
 
     await getTranslationByIdController(
       request as Request,
+      response as Response,
+      next as NextFunction,
+    );
+    await expect(next).toHaveBeenCalledWith(expectedError);
+  });
+});
+
+// UPDATE STATUS CONTROLLER
+describe('Given an updateTranslationStatusController function from translations controller', () => {
+  const translationId = 'mockId';
+  const requestBody = { status: 'Completed' };
+  const request = {
+    params: { id: translationId },
+    body: requestBody,
+  } as Partial<Request>;
+
+  const response = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  const next = jest.fn();
+
+  test('When the translation exits and it has been modified, it should respond with the modified translation', async () => {
+    TranslationModel.updateOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue({ matchedCount: 1, modifiedCount: 1 }),
+    }));
+
+    TranslationModel.findById = jest
+      .fn()
+      .mockResolvedValue({ id: translationId, ...requestBody });
+    await updateTranslationStatusController(
+      request as Request,
+      response as Response,
+      next,
+    );
+
+    const translationRes = { id: 'mockId', status: 'Completed' };
+
+    expect(response.json).toHaveBeenCalledWith(translationRes);
+  });
+
+  test('when an error is thwron during execution, should call the next middleware with the thrown error', async () => {
+    const error = new Error('Something went wrong!');
+    TranslationModel.updateOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockRejectedValue(error),
+    }));
+
+    await updateTranslationStatusController(
+      request as Request,
+      response as Response,
+      next,
+    );
+
+    expect(next).toHaveBeenCalled();
+  });
+
+  test('When the request body does not include a status property, it should throw a CustomHTTPError with a status of 400', async () => {
+    request.body = {};
+
+    await updateTranslationStatusController(
+      request as Request,
+      response as Response,
+      next,
+    );
+
+    expect(next).toHaveBeenCalledWith(
+      new CustomHTTPError(400, 'Status is required'),
+    );
+  });
+
+  test('When the translation does no exist, it should throw a CustomHTTPError with a status of 404', async () => {
+    const requestBody = { status: 'Completed' };
+    const request = {
+      params: { id: translationId },
+      body: requestBody,
+    } as Partial<Request>;
+
+    const response = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    } as Partial<Response>;
+
+    TranslationModel.updateOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue({ matchedCount: 0, modifiedCount: 0 }),
+    }));
+
+    await updateTranslationStatusController(
+      request as Request,
+      response as Response,
+      next,
+    );
+    expect(next).toHaveBeenCalledWith(
+      new CustomHTTPError(404, 'Translation does not exist'),
+    );
+  });
+});
+
+// UPDATE DOC TRANSLATED IN TRANSLATION
+describe('Given a update upload translation controller', () => {
+  const next = jest.fn();
+  const request = {
+    params: { id: 'mockId' },
+    file: { buffer: Buffer.from('mockedBuffer') },
+  } as Partial<
+    Request<
+      { id: string },
+      { msg: string; translation: Translation },
+      { translatedDoc: Buffer }
+    >
+  >;
+
+  const response = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  } as Partial<Response>;
+
+  test('When the request is made and everything goes ok, then the translation should be updated', async () => {
+    const translationToUpdate = {
+      _id: '123',
+      translatedDoc: null,
+      save: jest.fn().mockResolvedValue({
+        _id: '123',
+        translatedDoc: 'http://example.com/test.pdf',
+      }),
+    };
+    translationToUpdate.save.mockResolvedValue({
+      _id: '123',
+      translatedDoc: 'http://example.com/test.pdf',
+    });
+
+    TranslationModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(translationToUpdate),
+    }));
+    TranslationModel.updateOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+    }));
+
+    await updateTranslationUploadController(
+      request as Request<
+        { id: string },
+        { msg: string; translation: Translation },
+        { translatedDoc: Buffer }
+      >,
+      response as Response,
+      next as NextFunction,
+    );
+    await expect(response.status).toHaveBeenCalledWith(200);
+  });
+
+  test('When the translation to update is not found, then it should throw an error', async () => {
+    TranslationModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(null),
+    }));
+
+    const expectedError = new CustomHTTPError(404, 'Translation not found');
+
+    await updateTranslationUploadController(
+      request as Request<
+        { id: string },
+        { msg: string; translation: Translation },
+        { translatedDoc: Buffer }
+      >,
       response as Response,
       next as NextFunction,
     );
