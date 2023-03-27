@@ -157,7 +157,7 @@ export const getTranslationsController: RequestHandler<
 > = async (_req, res, next) => {
   try {
     const allTranslations = await TranslationModel.find({}).exec();
-    res.json(allTranslations);
+    res.json({ adminTranslations: allTranslations });
   } catch (error) {
     next(error);
   }
