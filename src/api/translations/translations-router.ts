@@ -16,7 +16,7 @@ TranslationsRouter.route('/create').post(
   createTranslationController,
 );
 
-TranslationsRouter.route('/all').get(getTranslationsController);
+TranslationsRouter.route('/').get(getTranslationsController);
 
 TranslationsRouter.route('/:id')
   .get(getTranslationByIdController)
