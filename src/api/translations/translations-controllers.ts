@@ -162,3 +162,27 @@ export const getTranslationsController: RequestHandler<
     next(error);
   }
 };
+
+export const deleteTranslationByIdController: RequestHandler<
+  { id: string },
+  { msg: string },
+  unknown,
+  unknown,
+  { id: string }
+> = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const translation = await TranslationModel.findById(id).exec();
+
+    if (translation === null) {
+      throw new CustomHTTPError(404, 'This translation does not exist');
+    }
+
+    await TranslationModel.deleteOne({ id }).exec();
+
+    res.json({ msg: 'The translation has been deleted' });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -3,6 +3,7 @@ import { CustomHTTPError } from '../../utils/custom-http-error';
 import { UserModel } from '../users/users-model';
 import {
   createTranslationController,
+  deleteTranslationByIdController,
   getTranslationByIdController,
   getTranslationsController,
   updateTranslationStatusController,
@@ -402,6 +403,83 @@ describe('Given a getTranslationsController function from translations controlle
     }));
     const next = jest.fn();
     await getTranslationsController(request, response as Response, next);
+    expect(next).toHaveBeenCalled();
+  });
+});
+
+// DELETE TRANSLATION
+describe('Given a controller to delete a translation by its id,', () => {
+  const mockRequest = {
+    params: { id: 'mockId' },
+  } as Partial<Request>;
+
+  const mockResponse = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+    locals: { id: 'mockUserId' },
+  } as Partial<Response>;
+
+  const next = jest.fn();
+
+  const mockTranslation = {
+    _id: '641c50c06018ad715d2752c7',
+    bookingRef: '675',
+    dueDate: '2023-04-28T00:00:00.000Z',
+    languageFrom: 'English',
+    languageTo: 'Spanish',
+    words: 524,
+    status: 'Completed',
+    toTranslateDoc:
+      'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/675.pdf',
+    translatedDoc:
+      'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/641c50c06018ad715d2752c7.pdf',
+    translator: 'Aana',
+    __v: 0,
+  };
+
+  test('when the session is deleted successfully, a message should be shown', async () => {
+    TranslationModel.findById = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockTranslation),
+    });
+
+    TranslationModel.deleteOne = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue({ deletedCount: 1 }),
+    });
+
+    await deleteTranslationByIdController(
+      mockRequest as Request<
+        { id: string },
+        { msg: string },
+        unknown,
+        unknown,
+        { id: string }
+      >,
+      mockResponse as Response<{ msg: string }, { id: string }>,
+      next,
+    );
+
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      msg: 'The translation has been deleted',
+    });
+  });
+
+  test('when the translation does not exist, an error should be passed on', async () => {
+    TranslationModel.findById = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(null),
+    });
+
+    await deleteTranslationByIdController(
+      mockRequest as Request<
+        { id: string },
+        { msg: string },
+        unknown,
+        unknown,
+        { id: string }
+      >,
+      mockResponse as Response<{ msg: string }, { id: string }>,
+      next,
+    );
+
     expect(next).toHaveBeenCalled();
   });
 });
