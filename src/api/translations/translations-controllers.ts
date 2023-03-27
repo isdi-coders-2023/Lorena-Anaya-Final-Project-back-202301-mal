@@ -165,7 +165,7 @@ export const getTranslationsController: RequestHandler<
 
 export const deleteTranslationByIdController: RequestHandler<
   { id: string },
-  { msg: string },
+  { msg: string; translation: Translation },
   unknown,
   unknown,
   { id: string }
@@ -173,15 +173,18 @@ export const deleteTranslationByIdController: RequestHandler<
   const { id } = req.params;
 
   try {
-    const translation = await TranslationModel.findById(id).exec();
+    const translation = await TranslationModel.findById({ _id: id }).exec();
 
     if (translation === null) {
       throw new CustomHTTPError(404, 'This translation does not exist');
     }
 
-    await TranslationModel.deleteOne({ id }).exec();
+    await TranslationModel.deleteOne({ _id: translation._id }).exec();
 
-    res.json({ msg: 'The translation has been deleted' });
+    res.json({
+      msg: 'The translation has been deleted',
+      translation,
+    });
   } catch (error) {
     next(error);
   }
