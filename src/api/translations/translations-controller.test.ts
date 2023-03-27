@@ -373,28 +373,47 @@ describe('Given a getTranslationsController function from translations controlle
 
   const translations = [
     {
+      __v: 0,
       _id: '641c50c06018ad715d2752c7',
       bookingRef: '675',
       dueDate: '2023-04-28T00:00:00.000Z',
       languageFrom: 'English',
       languageTo: 'Spanish',
-      words: 524,
       status: 'Completed',
       toTranslateDoc:
         'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/675.pdf',
       translatedDoc:
         'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/641c50c06018ad715d2752c7.pdf',
       translator: 'Aana',
-      __v: 0,
+      words: 524,
     },
   ];
 
+  const translationsRes = {
+    adminTranslations: [
+      {
+        __v: 0,
+        _id: '641c50c06018ad715d2752c7',
+        bookingRef: '675',
+        dueDate: '2023-04-28T00:00:00.000Z',
+        languageFrom: 'English',
+        languageTo: 'Spanish',
+        status: 'Completed',
+        toTranslateDoc:
+          'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/675.pdf',
+        translatedDoc:
+          'https://kfgqypbospvevemrysdv.supabase.co/storage/v1/object/public/translations/641c50c06018ad715d2752c7.pdf',
+        translator: 'Aana',
+        words: 524,
+      },
+    ],
+  };
   test('when it is invoked it should return a list of translations', async () => {
     TranslationModel.find = jest.fn().mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(translations),
     }));
     await getTranslationsController(request, response as Response, jest.fn());
-    expect(response.json).toHaveBeenCalledWith(translations);
+    expect(response.json).toHaveBeenCalledWith(translationsRes);
   });
 
   test('when the database throws an error then it should response with an error', async () => {
