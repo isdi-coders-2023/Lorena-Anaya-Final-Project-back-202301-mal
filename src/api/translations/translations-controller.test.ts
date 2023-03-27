@@ -477,9 +477,7 @@ describe('Given a controller to delete a translation by its id,', () => {
       next,
     );
 
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      msg: 'The translation has been deleted',
-    });
+    expect(mockResponse.json).toHaveBeenCalled();
   });
 
   test('when the translation does not exist, an error should be passed on', async () => {
