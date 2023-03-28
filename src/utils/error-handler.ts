@@ -11,7 +11,7 @@ export const appErrorHandler = (
   if (err instanceof ValidationError) {
     return res
       .status(err.statusCode)
-      .json({ msg: err.details.body?.[0].message ?? err.message });
+      .json({ msg: err.details.body?.[0].message });
   }
 
   if (err instanceof CustomHTTPError) {

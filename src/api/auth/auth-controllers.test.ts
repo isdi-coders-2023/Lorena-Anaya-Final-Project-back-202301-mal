@@ -4,10 +4,11 @@ import {
   loginController,
   registerController,
 } from '../auth/auth-controllers.js';
-import { encryptPassword } from './auth-utils.js';
+import { encryptPassword, generateJWTToken } from './auth-utils.js';
 import dotenv from 'dotenv';
 import { CustomHTTPError } from '../../utils/custom-http-error.js';
 import { RegisterRequest } from '../../types/auth-models.js';
+import mongoose from 'mongoose';
 dotenv.config();
 
 const newUser: RegisterRequest = {
@@ -42,6 +43,7 @@ const response = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn(),
 } as Partial<Response>;
+
 const next = jest.fn();
 
 const OLD_ENV = process.env;
@@ -52,12 +54,15 @@ beforeEach(() => {
 afterAll(() => {
   process.env = OLD_ENV;
 });
-
-UserModel.findOne = jest.fn().mockReturnValue({
-  exec: jest.fn().mockResolvedValue(null),
+afterEach(() => {
+  jest.resetModules();
 });
 
+// REGISTER
 describe('Given a register controller', () => {
+  UserModel.findOne = jest.fn().mockReturnValue({
+    exec: jest.fn().mockResolvedValue(null),
+  });
   test('When the password encryption algorithm environment variable does not exist, then the response should be an error', async () => {
     delete process.env.PASSWORD_ENCRYPTION_ALGORITHM;
     await registerController(request as Request, response as Response, next);
@@ -103,22 +108,31 @@ describe('Given a register controller', () => {
   });
 });
 
+const mockedExistingUser = {
+  _id: new mongoose.Types.ObjectId('123456789123456789123456'),
+  email: request.body.email,
+  password: encryptPassword(request.body.password),
+  firstName: 'Ana',
+  lastName: 'Diaz',
+  phone: '678564768',
+  languages: 'French',
+  role: 'translator',
+  translations: [],
+};
+
+// LOGIN
 describe('Given a login controller', () => {
-  test('When the json web token secret environment variable does not exist, then the response should be an error', async () => {
+  test('When the jwt secret environment variable does not exist, then an error should be thrown and passed on', async () => {
     delete process.env.JWT_SECRET;
-    await loginController(
-      request as Request,
-      response as Response,
-      next as NextFunction,
-    );
+
+    UserModel.findOne = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue(mockedExistingUser),
+    }));
+
+    await loginController(request as Request, response as Response, next);
+
     expect(next).toHaveBeenCalled();
   });
-
-  test('When the user tries to login with a valid account, then his token should be generated', async () => {
-    await loginController(request as Request, response as Response, jest.fn());
-    expect(response.status).toHaveBeenCalledWith(201);
-  });
-
   test('when the user tries to login with an non existing account, then an error message shold be shown', async () => {
     UserModel.findOne = jest.fn().mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(null),
@@ -134,5 +148,19 @@ describe('Given a login controller', () => {
     await loginController(request as Request, response as Response, next);
 
     expect(next).toHaveBeenCalledWith(expectedError);
+  });
+
+  test('When the user exists, then it should return the access token', async () => {
+    UserModel.findOne = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(mockedExistingUser),
+    });
+
+    await loginController(request as Request, response as Response, next);
+
+    expect(response.status).toHaveBeenCalledWith(201);
+    expect(response.json).toHaveBeenCalledWith({
+      accessToken: generateJWTToken(mockedExistingUser._id.toString()),
+      id: '123456789123456789123456',
+    });
   });
 });
