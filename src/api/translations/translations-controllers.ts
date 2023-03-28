@@ -142,7 +142,7 @@ export const updateTranslationStatusController: RequestHandler = async (
     }
 
     if (dbRes.modifiedCount === 1) {
-      const updatedTranslation = await TranslationModel.findById(id);
+      const updatedTranslation = await TranslationModel.findById(id).exec();
       return res.json(updatedTranslation);
     }
   } catch (err) {
