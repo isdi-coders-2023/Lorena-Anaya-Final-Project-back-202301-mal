@@ -70,7 +70,7 @@ export const loginController: RequestHandler<
     const userToken = generateJWTToken(existingUser._id.toString());
     return res
       .status(201)
-      .json({ id: existingUser.id, accessToken: userToken });
+      .json({ id: existingUser._id.toString(), accessToken: userToken });
   } catch (err) {
     next(err);
   }
