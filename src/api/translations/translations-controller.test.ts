@@ -222,9 +222,10 @@ describe('Given an updateTranslationStatusController function from translations 
       exec: jest.fn().mockResolvedValue({ matchedCount: 1, modifiedCount: 1 }),
     }));
 
-    TranslationModel.findById = jest
-      .fn()
-      .mockResolvedValue({ id: translationId, ...requestBody });
+    TranslationModel.findById = jest.fn().mockImplementation(() => ({
+      exec: jest.fn().mockResolvedValue({ id: translationId, ...requestBody }),
+    }));
+
     await updateTranslationStatusController(
       request as Request,
       response as Response,
@@ -233,7 +234,7 @@ describe('Given an updateTranslationStatusController function from translations 
 
     const translationRes = { id: 'mockId', status: 'Completed' };
 
-    expect(response.json).toHaveBeenCalledWith(translationRes);
+    await expect(response.json).toHaveBeenCalledWith(translationRes);
   });
 
   test('when an error is thwron during execution, should call the next middleware with the thrown error', async () => {
