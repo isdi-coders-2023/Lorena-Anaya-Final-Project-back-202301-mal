@@ -32,3 +32,34 @@ For storage and uploding images and text files, Supabase (https://supabase.com/)
 -MongoDB Memory Server (https://www.npmjs.com/package/mongodb-memory-server)
 
 -Supertest (https://www.npmjs.com/package/supertest)
+
+🔸API Endpoints
+-Get translations:
+https://lorena-anaya-final-project-back-202301.onrender.com/translations/
+
+-Get user translations:
+https://lorena-anaya-final-project-back-202301.onrender.com/user/:id/translations
+
+-Get translation by id:
+https://lorena-anaya-final-project-back-202301.onrender.com/translations/:id
+
+-Delete translation by id:
+https://lorena-anaya-final-project-back-202301.onrender.com/translations/:id
+
+-Create a translation:
+https://lorena-anaya-final-project-back-202301.onrender.com/translations/
+
+-Update translation status:
+https://lorena-anaya-final-project-back-202301.onrender.com/translations/status/:id
+
+-Get users:
+https://lorena-anaya-final-project-back-202301.onrender.com/user/all
+
+-Get user name:
+https://lorena-anaya-final-project-back-202301.onrender.com/user/:id/name
+
+-Register user:
+https://lorena-anaya-final-project-back-202301.onrender.com/auth/register
+
+-Login user:
+https://lorena-anaya-final-project-back-202301.onrender.com/auth/login
