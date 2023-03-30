@@ -1,0 +1,251 @@
+{
+  "info": {
+    "_postman_id": "22bdbd0f-1b6d-42a7-8c61-2ea2624be145",
+    "name": "BTC365 Projects",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "25667910"
+  },
+  "item": [
+    {
+      "name": "Translations",
+      "item": [
+        {
+          "name": "Get user translations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/user/64258ce72e0cf8f00dafd3e0/translations",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["user", "64258ce72e0cf8f00dafd3e0", "translations"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get translations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/translations/",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["translations", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get translation by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/translations/64254c56ce8c0922f0bf85b4",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["translations", "64254c56ce8c0922f0bf85b4"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete translation by id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/translations/64254c56ce8c0922f0bf85b4",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["translations", "64254c56ce8c0922f0bf85b4"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update translation document",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bookingRef\": \"002\",\n    \"dueDate\": \"2023-05-30T00:00:00.000+00:00\",\n    \"languageTo\": \"English\",\n    \"languageFrom\": \"French\",\n    \"words\": \"4335\",\n    \"status\": \"Pending\",\n    \"toTranslateDoc\": \"url\",\n    \"translatedDoc\": \"url2\",\n    \"translator\": \"Name\",\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/translations/",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["translations", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update translation status by id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\": \"Completed\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/translations/status/64254c56ce8c0922f0bf85b4",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["translations", "status", "64254c56ce8c0922f0bf85b4"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get user name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/user/64258ce72e0cf8f00dafd3e0/name",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["user", "64258ce72e0cf8f00dafd3e0", "name"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/user/all",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["user", "all"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MTVjZmEzYjI3NWYxNzRiZmJlNzZlYyIsImlhdCI6MTY3OTQ4NzU1N30.ndn0zkQqSkPWgnMYrJdPNefMPtzwTr0ukZumXptOX0g",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"youremail@email.com\",\n    \"password\": \"yourpassword\",\n    \"firstName\": \"YourName\",\n    \"lastName\": \"YourLastName\",\n    \"phone\": \"654789654\",\n    \"languages\": \"English, Spanish\",\n    \"translations\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/auth/register",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"youremail@email.com\",\n    \"password\": \"yourpassword\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://lorena-anaya-final-project-back-202301.onrender.com/auth/login",
+              "protocol": "https",
+              "host": [
+                "lorena-anaya-final-project-back-202301",
+                "onrender",
+                "com"
+              ],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
